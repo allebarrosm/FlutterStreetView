@@ -52,14 +52,6 @@ class _MyAppState extends State<MyApp> {
               child: FlutterStreetView(
                 latitude: locations[currentIndex].latitude,
                 longitude: locations[currentIndex].longitude,
-                onPositionChanged: (newPosition) {
-                  setState(() {
-                    currentPosition = LatLng(
-                      newPosition.latitude,
-                      newPosition.longitude,
-                    );
-                  });
-                },
               ),
             ),
             Padding(

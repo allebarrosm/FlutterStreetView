@@ -9,7 +9,6 @@ class FlutterStreetView extends StatefulWidget {
   final double? bearing;
   final double? tilt;
   final double? zoom;
-  final void Function(LatLng)? onPositionChanged;
 
   const FlutterStreetView({
     super.key,
@@ -18,7 +17,6 @@ class FlutterStreetView extends StatefulWidget {
     this.bearing,
     this.tilt,
     this.zoom,
-    this.onPositionChanged,
   });
 
   @override
@@ -31,23 +29,22 @@ class _FlutterStreetViewState extends State<FlutterStreetView> {
   @override
   void initState() {
     super.initState();
-    _setupPositionUpdates();
   }
 
-  void _setupPositionUpdates() {
-    if (widget.onPositionChanged != null) {
-      _channel.setMethodCallHandler((call) async {
-        if (call.method == 'positionChanged') {
-          final lat = call.arguments['latitude'] as double;
-          final lng = call.arguments['longitude'] as double;
-          widget.onPositionChanged!(LatLng(lat, lng));
-        }
+  Future<void> _setupPositionUpdates() async {
+    try {
+      await _channel.invokeMethod<bool>('updatePosition', {
+        'latitude': widget.latitude,
+        'longitude': widget.longitude,
       });
+    } on PlatformException catch (e) {
+      print('Erro: ${e.message}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _setupPositionUpdates();
     if (kIsWeb) {
       return const Text("Street View Web ainda não implementado.");
     }
